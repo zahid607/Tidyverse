@@ -1,0 +1,114 @@
+---
+title: "Tidyverse Create Assignment"
+author: "Mohammad Zahid Chowdhury"
+date: "`r Sys.Date()`"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+
+# Overview of the dataset: This dataset is collected from kaggle datasets and this dataset provides a detailed overview of gym members' exercise routines, physical attributes, and fitness metrics. It contains 973 samples of gym data, including key performance indicators such as heart rate, calories burned, and workout duration. Each entry also includes demographic data and experience levels, allowing for comprehensive analysis of fitness patterns, athlete progression, and health trends.
+
+# Load libraries:
+
+
+```{r}
+library(tidyverse)
+library(ggplot2)
+library(dplyr)
+```
+
+# Read the CSV data set:
+
+```{r}
+gymdata<-read.csv("https://raw.githubusercontent.com/zahid607/Tidyverse/refs/heads/main/gym_members_exercise_tracking.csv")
+
+head(gymdata)
+```
+
+# Name of Columns of the data set. 
+
+
+```{r}
+colnames(gymdata)
+```
+
+
+# Summary statistics of gymdata
+
+
+```{r}
+summary(gymdata)
+```
+
+
+# Tyepes of Workout and their frequency:
+
+
+```{r}
+gymdata %>%
+  count(Workout_Type, sort = TRUE)
+```
+
+
+# Total Calories burned by Gender
+
+
+```{r}
+gymdata %>%
+  group_by(Gender) %>%
+  summarize(Total_Calories = sum(Calories_Burned, na.rm = TRUE))
+```
+
+
+
+# Gender Differences in Workout Habits:
+
+
+
+
+```{r}
+gymdata %>%
+  group_by(Gender) %>%
+  summarize(
+    avg_duration = mean(Session_Duration..hours., na.rm = TRUE),
+    avg_calories = mean(Calories_Burned, na.rm = TRUE)
+  )
+```
+
+# Comment: Females speding average time in gym is slightly more than Males but males are burned more calories than females.
+
+
+
+
+
+# Bar diagram of Average Calories Burned by Workout Type
+
+```{r}
+
+# Clean + group data: average calories burned per exercise type
+calories_by_exercise <- gymdata %>%
+  group_by(Workout_Type) %>%
+  summarize(avg_calories = mean(Calories_Burned, na.rm = TRUE)) %>%
+  arrange(desc(avg_calories))
+
+# Plot it
+ggplot(calories_by_exercise, aes(x = reorder(Workout_Type, avg_calories), y = avg_calories)) +
+  geom_col(fill = "steelblue") +
+  coord_flip() +
+  labs(
+    title = "Average Calories Burned by Workout Type",
+    x = "Workout Type",
+    y = "Avg. Calories Burned"
+  ) +
+  theme_minimal()
+```
+
+
+# Conclusion: This represents a basic analysis of the gym members' exercise tracking data. 
+
